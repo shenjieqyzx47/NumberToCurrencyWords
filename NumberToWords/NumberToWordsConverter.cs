@@ -1,39 +1,62 @@
-﻿namespace NumberToWords;
+using System.Globalization;
+using System.Numerics;
+
+namespace NumberToWords;
 
 public static class NumberToWordsConverter
 {
+    private const string EmptyInputMessage = "No input received.";
+    private const string InvalidAmountMessage = "Enter a monetary amount (up to two decimal places).";
+
     public static string Convert(string? input)
     {
-        // filter null or empty input
         if (string.IsNullOrEmpty(input))
         {
-            return "No input received.";
+            return EmptyInputMessage;
         }
 
-        var canParse = decimal.TryParse(input, out var number);
-        var parts = input.Split('.');
-        if (!canParse || (parts.Length > 1 && parts[1].Length > 2))
+        if (!TryParseAmount(input, out var amount))
         {
-            return "Enter a monetary amount (up to two decimal places).";
+            return InvalidAmountMessage;
         }
 
-        var isNegative = number < 0;
-        number = isNegative ? -number : number;
-        var dollarNumber = (int)decimal.Truncate(number);
-        var centNumber = (int)((number - dollarNumber) * 100);
+        var isNegative = amount < 0;
+        var absoluteAmount = Math.Abs(amount);
+        var dollars = new BigInteger(decimal.Truncate(absoluteAmount));
+        var cents = (int)((absoluteAmount - decimal.Truncate(absoluteAmount)) * 100);
+        var dollarResult = NumberWordsDictionary.GetWords(dollars);
+        var dollarWords = dollarResult.Words;
+        var dollarUnit = dollarResult.IsPlural ? "dollars" : "dollar";
+        var prefix = isNegative ? "negative " : string.Empty;
 
-        var dollarWords = NumberWordsDictionary.GetWords(dollarNumber);
-        var centWords = NumberWordsDictionary.GetWordsUnderHundred(centNumber);
-        var dollarUnit = dollarWords.IsPlural ? "dollars" : "dollar";
-
-        if (centWords is null)
+        if (cents == 0)
         {
-            return isNegative ? $"negative {dollarWords.Words} {dollarUnit}" : $"{dollarWords.Words} {dollarUnit}";
+            return $"{prefix}{dollarWords} {dollarUnit}";
         }
 
-        var centUnit = centWords.IsPlural ? "cents" : "cent";
-        return isNegative
-            ? $"negative {dollarWords.Words} {dollarUnit} and {centWords.Words} {centUnit}"
-            : $"{dollarWords.Words} {dollarUnit} and {centWords.Words} {centUnit}";
+        var centWords = NumberWordsDictionary.GetWordsUnderHundred(cents)!.Words;
+        var centUnit = cents == 1 ? "cent" : "cents";
+        return $"{prefix}{dollarWords} {dollarUnit} and {centWords} {centUnit}";
+    }
+
+    private static bool TryParseAmount(string input, out decimal amount)
+    {
+        amount = default;
+        var decimalPoint = input.IndexOf('.');
+        if (decimalPoint >= 0 && input.Length - decimalPoint - 1 > 2)
+        {
+            return false;
+        }
+
+        if (!decimal.TryParse(
+            input,
+            NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
+            CultureInfo.InvariantCulture,
+            out amount))
+        {
+            return false;
+        }
+
+        return Math.Abs(amount) < 1_000_000_000_000_000_000_000m;
     }
 }
