@@ -18,9 +18,9 @@ public static class NumberToWordsConverter
         }
 
         var isNegative = number < 0;
-
-        var dollarNumber = (int)decimal.Round(isNegative ? number * -1 : number, MidpointRounding.AwayFromZero);
-        var centNumber = (int)(((isNegative ? number * -1 : number) - dollarNumber) * 100);
+        number = isNegative ? -number : number;
+        var dollarNumber = (int)decimal.Truncate(number);
+        var centNumber = (int)((number - dollarNumber) * 100);
 
         var dollarWords = NumberWordsDictionary.GetWords(dollarNumber);
         var centWords = NumberWordsDictionary.GetWordsUnderHundred(centNumber);

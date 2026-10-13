@@ -138,7 +138,7 @@ public static class NumberWordsDictionary
     public static GetWordsResult GetWords(BigInteger number)
     {
         if (number == 0)
-            return new GetWordsResult(false, NumberWordsList.Single(x => x.Number == number).Word);
+            return new GetWordsResult(false, "Zero");
 
         if (number == 1)
             return new GetWordsResult(false, NumberWordsList.Single(x => x.Number == number).Word);

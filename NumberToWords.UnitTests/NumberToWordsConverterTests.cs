@@ -43,6 +43,7 @@ public sealed class NumberToWordsConverterTests
     [InlineData("68092", "sixty-eight thousand and ninety-two dollars")]
     [InlineData("-235.07", "negative two hundred and thirty-five dollars and seven cents")]
     [InlineData("1.1", "one dollar and ten cents")]
+    [InlineData("-123.88", "negative one hundred and twenty-three dollars and eighty-eight cents")]
     public void WhenInputIsValid_ConvertToWords_ShouldReturnCorrectResult(string input, string expected)
     {
         // Act
