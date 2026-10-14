@@ -14,11 +14,12 @@ function App() {
         try {
             const response = await fetch(`/convert?input=${encodeURIComponent(input)}`)
 
+            const responseBody = await response.text()
             if (!response.ok) {
-                throw new Error('The number could not be converted.')
+                throw new Error(getErrorMessage(responseBody))
             }
 
-            setResult(await response.text())
+            setResult(responseBody)
         } catch (requestError) {
             setResult('')
             setError(requestError.message)
@@ -68,6 +69,19 @@ function App() {
             <div className="ticks"></div>
         </>
     )
+}
+
+function getErrorMessage(responseBody) {
+    if (!responseBody) {
+        return 'The number could not be converted.'
+    }
+
+    try {
+        const problem = JSON.parse(responseBody)
+        return problem.detail || problem.title || 'The number could not be converted.'
+    } catch {
+        return responseBody
+    }
 }
 
 export default App
