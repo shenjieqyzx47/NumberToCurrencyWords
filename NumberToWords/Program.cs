@@ -2,15 +2,15 @@
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails();
-builder.Services.AddSingleton<ConvertAmountCommand>();
+builder.Services.AddSingleton<ConvertAmountQuery>();
 
 var app = builder.Build();
 
 app.UseExceptionHandler();
 
-app.MapGet("/convert", (string? input, ConvertAmountCommand command) =>
+app.MapGet("/convert", (string? input, ConvertAmountQuery query) =>
 {
-    var result = command.Handle(input);
+    var result = query.Handle(input);
     if (result.IsSuccess)
     {
         return Results.Text(result.Value!);

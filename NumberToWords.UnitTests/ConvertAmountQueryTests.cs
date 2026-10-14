@@ -2,16 +2,16 @@ using Xunit;
 
 namespace NumberToWords.UnitTests;
 
-public sealed class ConvertAmountCommandTests
+public sealed class ConvertAmountQueryTests
 {
-    private readonly ConvertAmountCommand _command = new();
+    private readonly ConvertAmountQuery _query = new();
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     public void WhenInputIsNullOrEmpty_Execute_ShouldReturnFailure(string? input)
     {
-        var result = _command.Handle(input);
+        var result = _query.Handle(input);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("No input received.", result.Error);
@@ -26,7 +26,7 @@ public sealed class ConvertAmountCommandTests
     [InlineData("124162784834568956905600506706124162784834568956905600506706")]
     public void WhenInputIsInvalid_Execute_ShouldReturnFailure(string input)
     {
-        var result = _command.Handle(input);
+        var result = _query.Handle(input);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Enter a monetary amount (up to two decimal places).", result.Error);
@@ -40,7 +40,7 @@ public sealed class ConvertAmountCommandTests
     [InlineData("-123.88", "negative one hundred and twenty-three dollars and eighty-eight cents")]
     public void WhenInputIsValid_Execute_ShouldReturnWords(string input, string expected)
     {
-        var result = _command.Handle(input);
+        var result = _query.Handle(input);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(expected, result.Value);

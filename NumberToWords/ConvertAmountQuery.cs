@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace NumberToWords;
 
-public sealed class ConvertAmountCommand
+public sealed class ConvertAmountQuery
 {
     private const string EmptyInputMessage = "No input received.";
     private const string InvalidAmountMessage = "Enter a monetary amount (up to two decimal places).";

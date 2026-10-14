@@ -4,13 +4,13 @@ I used test-driven development for the conversion logic. The expected wording an
 
 ## How a request is handled
 
-The `/convert` endpoint passes the supplied text to `ConvertAmountCommand`. The command checks the input and parses it using invariant culture. It then calls `NumberToWordsConverter`, which turns the dollar and cent values into words. `NumberWordsDictionary` holds the word lists and handles each three-digit group.
+The `/convert` endpoint passes the supplied text to `ConvertAmountQuery`. The query checks the input and parses it using invariant culture. It then calls `NumberToWordsConverter`, which turns the dollar and cent values into words. `NumberWordsDictionary` holds the word lists and handles each three-digit group.
 
-Each part has one job: the command deals with input, the converter deals with monetary wording, and the dictionary supplies the words. That keeps validation changes from getting tangled up with the conversion rules.
+Each part has one job: the query deals with input, the converter deals with monetary wording, and the dictionary supplies the words. That keeps validation changes from getting tangled up with the conversion rules.
 
 ## Errors
 
-Invalid input is an expected outcome, so the command returns a `ConversionResult` with either the converted text or an error message. The endpoint turns a failed result into HTTP 400 Problem Details, which the browser page can display to the user. Throwing an exception for ordinary input mistakes would make that path harder to follow.
+Invalid input is an expected outcome, so the query returns a `ConversionResult` with either the converted text or an error message. The endpoint turns a failed result into HTTP 400 Problem Details, which the browser page can display to the user. Throwing an exception for ordinary input mistakes would make that path harder to follow.
 
 Exceptions are still useful for unexpected failures. ASP.NET Core’s exception handler returns HTTP 500 for those, rather than presenting them as invalid input.
 
